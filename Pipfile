@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+asgiref = "==3.3.1"
+gunicorn = "==20.0.4"
+pillow = "==8.1.0"
+pytz = "==2020.5"
+sqlparse = "==0.4.1"
+uuid = "==1.30"
+whitenoise = "==5.2.0"
+psycopg2-binary = "==2.8.6"
+image = "*"
+django-import-export = "*"
+django-filter = "*"
+xlsxwriter = "*"
+openpyxl-image-loader = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"

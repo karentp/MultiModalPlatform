@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="u-align-center u-clearfix u-custom-color-6 u-section-1" id="carousel_e99a">
+  <br>
+  <br>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 offset-lg-3 col-md-6 offset-md-3 col-sm-6 offset-sm-3 mt-5 ">
+        <h3>Segmentos e Imágenes</h3>
+      </div>
+    </div>
+    {% include 'messages.html' %}
+
+    <hr>
+
+    <div class="container">
+      <div class="row ">
+        <div class="row ">
+          <div class="col-sm-4">
+            <h5 class="card-title" style="color:black">Segmentos Totales</h5>
+          </div>
+          <div class="col-sm-2">
+            <h3 class="card-title" style="color:black">{{total_segmentations}}</h3>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class='card card-body' style="color:black;">
+          <form id="Filtersearchmethod" method='get'>
+            {{myFilter.form}}
+
+            <button class="btn btn-primary" type="submit"> Buscar </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      
+        <hr>
+        <div class="col-md-4">
+        {% if request.user.is_authenticated %}
+        <a class="btn btn-primary  btn-sm btn-block" href="{% url 'simple_upload' %}">Subir Segmentos</a>
+        </div>
+        <div class="col-md-4">
+              </div>
+        <div class="col-md-4">
+        <a class="btn btn-dark btn-sm btn-block" onclick="filter" href="{% url 'export-excel' %}"> Segmentos a Excel</a>
+        <script>
+          function filter(){
+            document.getElementById("Filtersearch").submit()
+          }
+        </script>
+        </div>
+        {% endif %}
+        <br>
+    </div>
+    
+    <div class="row" style="margin-top:2%;">
+      <div class="col-xl">
+        <div class="card card-body">
+          <table class="table ">
+            <thead class="thead-dark">
+              <tr>
+                <th>Segmento/Imagen</th>
+                <th>Nombre</th>
+                <th>Subido por</th>
+                <th>Ver</th>
+                {% if request.user.is_authenticated %}
+                <th>Actualizar</th>
+                <th>Eliminar</th>
+                {% endif %}
+              </tr>
+            </thead>
+      
+            {% for i in segmentations%}
+            <tr>
+              
+              <td><img class="card-img-top" height="100" src="{{i.image.url}}" alt="Imagen Segmentada"></td>
+              <td>{{i.document_name}}</td>
+              <td>{{i.created_by}}</td>
+              <td><a class="btn btn-sm btn-info" href="">Ver</a></td>
+
+              {% if request.user.is_authenticated %}
+              <td><a class="btn btn-sm btn-warning" href="">Actualizar</a></td>
+              <td><a class="btn btn-sm btn-danger" href="">Eliminar</a></td>
+              {% endif %}
+
+            </tr>
+            {% endfor %}
+
+          </table>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+</section>
+
+{% endblock %}

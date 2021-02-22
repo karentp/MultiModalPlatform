@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+  <div class="message signup">
+    <div class="btn-wrapper">
+      <button class="button" id="login">Registrarse</button>
+      <button class="button" id="signup"> Iniciar Sesión </button>
+    </div>
+  </div>
+  <div class="form form--login">
+    <div class="form--heading">¡Bienvenido de vuelta! </div>
+    <form autocomplete="off" action="{% url 'login'%}" method="POST">
+      {% csrf_token %}
+      <input type="text" placeholder="Correo electrónico" name="email" required="required">
+      <input type="password" placeholder="Contraseña" name="password" required="required">
+      <button type="submit" class="button">Ingresar</button>
+                
+    </form>
+  </div>
+  <div class="form form--signup">
+    <div class="form--heading">¡Bienvenido! Registrarse</div>
+    {% include 'messages.html' %}
+    <form autocomplete="off" action="{% url 'singup' %}" method="POST">
+      {% csrf_token %}
+      <input type="text" placeholder="Nombre" name="name" required="required">
+      <input type="email" placeholder="Correo electrónico" name="email1" required="required">
+      <input type="password" placeholder="Contraseña" name="password1" required="required">
+      <button type="submit" class="button">Registrarse</button>
+    </form>
+  </div>
+</div>
+
+<script src="functionalitielogin.js"></script>
+    
+   {% endblock %}

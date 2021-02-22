@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="u-align-center u-clearfix u-custom-color-6 u-section-1" id="sec-d745">
+    <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+      <div class="u-align-center-sm u-align-center-xs u-border-10 u-border-custom-color-6 u-container-style u-expanded-width-sm u-expanded-width-xs u-group u-group-1">
+        <div class="u-container-layout u-container-layout-1">
+          <h3 class="u-align-center-lg u-align-center-md u-align-center-xl u-text u-text-default u-text-1">UPLOAD Form </h3>
+          {% include 'messages.html' %}
+          <div class="u-form u-form-1">
+            <form action="{% url 'simple_upload' %}" enctype="multipart/form-data" method="POST" class="u-clearfix u-form-spacing-20 u-form-vertical u-inner-form" style="padding: 10px" >
+              {% csrf_token %} 
+              <div class="u-form-email u-form-group">
+               <b> Color </b> <input type="color"  name="color" class="u-border-1 u-border-grey-30 u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-white"   spellcheck="True">
+              </div>
+
+              <div class="u-form-email u-form-group">
+                <label for="name-a97b" class="u-form-control-hidden u-label">Nombre del documento</label>
+                <input type="text" placeholder="Nombre del documento" id="name-a97b" name="document_name" class="u-border-1 u-border-grey-30 u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-white"   spellcheck="True">
+              </div>
+
+              <div class="u-form-group u-form-select u-form-group-3">
+                <label for="select-8798" class="u-form-control-hidden u-label">Código</label>
+                <div class="u-form-select-wrapper">
+                  <select id="select-8798" name="code" class="u-border-1 u-border-grey-30 u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-white"  >
+                    <option value="UM\Marco-a">UM\Marco-a</option>
+                    <option value="UM\Elemento verbal escrito-a">UM\Elemento verbal escrito-a</option>
+                    <option value="UM\Elemento verbal escrito-a\Elemento verbal escrito-b">UM\Elemento verbal escrito-a\Elemento verbal escrito-b</option>
+                    <option value="UM\Imagen-a">UM\Imagen-a</option>
+                    <option value="UM\Enlace">UM\Enlace</option>
+                    <option value="UM\Otro">UM\Otro</option>
+                    <option value="UM\Realzado-a">UM\Realzado-a</option>
+                    <option value="UM\Línea">UM\Línea</option>
+                  </select>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="12" version="1" class="u-caret"><path fill="currentColor" d="M4 8L0 4h8z"></path></svg>
+                </div>
+              </div>
+
+              <div class="u-form-email u-form-group">
+                <label for="name-a97b" class="u-form-control-hidden u-label">Principio</label>
+                <input type="text" placeholder="Principio" id="name-a97b" name="start" class="u-border-1 u-border-grey-30 u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-white"   spellcheck="True">
+              </div>
+              <div class="u-form-email u-form-group">
+                <label for="name-a97b" class="u-form-control-hidden u-label">Final</label>
+                <input type="text" placeholder="Final" id="name-a97b" name="end" class="u-border-1 u-border-grey-30 u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-white"  >
+              </div>
+
+              <div class="u-form-email u-form-group">
+                <label for="name-a97b" class="u-form-control-hidden u-label">Peso</label>
+                <input type="number" placeholder="Peso" id="name-a97b" name="weight" class="u-border-1 u-border-grey-30 u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-white"  >
+              </div>
+
+
+              <div class="u-form-email u-form-group">
+                <input type="file" name="myfile">
+                <button type = "submit"> Subir </button>
+              </div>
+
+
+              <div class="u-form-email u-form-group">
+                <label for="name-a97b" class="u-form-control-hidden u-label">Porcentaje %</label>
+                <input type="number" placeholder="Porcentaje %" id="name-a97b" name="percentage" class="u-border-1 u-border-grey-30 u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-white"  >
+              </div>
+
+              <div class="u-form-email u-form-group">
+                <label for="name-a97b" class="u-form-control-hidden u-label">Segmentos Codificados</label>
+                <input type="number" placeholder="Enter Segmentos Codificados" id="name-a97b" name="condificados" class="u-border-1 u-border-grey-30 u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-white"  >
+              </div>
+
+              <div class="u-form-email u-form-group">
+                <label for="memos-a97b" class="u-form-control-hidden u-label">Memos</label>
+                <input type="number" placeholder="Enter Memos" id="memos-a97b" name="memos" class="u-border-1 u-border-grey-30 u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-white"  >
+              </div>
+              <div class="u-align-center u-form-group u-form-submit">
+                <button type="submit" class="u-btn u-btn-submit u-button-style u-custom-color-1 u-btn-1">Save</button>
+              </div>
+            </form>
+          </div>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+

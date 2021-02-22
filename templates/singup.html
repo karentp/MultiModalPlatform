@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+  <section class="u-align-center u-clearfix u-custom-color-6 u-section-1" id="sec-d745">
+      <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+        <div class="u-align-center-sm u-align-center-xs u-border-10 u-border-custom-color-6 u-container-style u-expanded-width-sm u-expanded-width-xs u-group u-group-1">
+          <div class="u-container-layout u-container-layout-1">
+            <h3 class="u-align-center-lg u-align-center-md u-align-center-xl u-text u-text-default u-text-1">Crear una cuenta</h3>
+            {% include 'messages.html' %}
+            <div class="u-form u-form-1">
+              <form action="{% url 'singup' %}" method="POST" class="u-clearfix u-form-spacing-20 u-form-vertical u-inner-form" style="padding: 10px" >
+                {% csrf_token %} 
+                <!-- <div class="u-form-group">
+                  <label for="username-a97b" class="u-form-control-hidden u-label"></label>
+                  <input type="text" placeholder="Enter Username" id="username" name="username" class="u-border-1 u-border-grey-30 u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-white" required="required">
+                </div> -->
+
+                <div class="u-form-email u-form-group">
+                  <label for="name-a97b" class="u-form-control-hidden u-label">Name</label>
+                  <input type="email" placeholder="Ingresa tú correo electrónico" id="email" name="email" class="u-border-1 u-border-grey-30 u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-white" required="required" spellcheck="false">
+                </div>
+                <div class="u-form-group">
+                  <label for="email-a97b" class="u-form-control-hidden u-label"></label>
+                  <input type="password" placeholder="Contrasena" id="password1" name="password1" class="u-border-1 u-border-grey-30 u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-white" required="required">
+                </div>
+                <div class="u-align-center u-form-group u-form-submit">
+                  <button type="submit" class="u-btn u-btn-submit u-button-style u-custom-color-1 u-btn-1">Registrarse</button>
+                </div>
+              </form>
+            </div>
+            <p class="u-align-center u-text u-text-2" spellcheck="false">¿Ya tienes una cuenta? <a href="/login" data-page-id="187012" class="u-active-none u-border-none u-btn u-button-link u-button-style u-hover-none u-none u-text-custom-color-1 u-btn-2">Ingresar</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Sofia' rel='stylesheet' type='text/css'>
+
+
+
+
+{% endblock %}

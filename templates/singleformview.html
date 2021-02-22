@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section
+      class="u-align-center u-clearfix u-custom-color-6 u-section-1"
+      id="carousel_e99a"
+    >
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 offset-lg-3 col-md-6 offset-md-3 col-sm-6 offset-sm-3 mt-5 "><h3 >Segmentation</h3></div>
+    </div>
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2 col-md-8 offset-md-2 col-sm-12 mt-5 mb-5 ">
+        <div class="card" style="width: 100%;">
+          <img class="card-img-top" height="auto"  src="{{segmentation.image.url}}" alt="Product Image">
+          <div class="card-body">
+            <p class="card-text" style="color: #c99424;"><b>Color: </b>{{segmentation.color}}</p>          
+            <p class="card-text" style="color: #c99424;"><b>Nombre del documento: </b>{{segmentation.document_name}}</p>
+            <p class="card-text" style="color: #c99424;"><b>Código: </b>{{segmentation.code}}</p>
+            
+            <p class="card-text" style="color: #c99424;"><b>Principio: </b>{{segmentation.start}}</p>
+            <p class="card-text" style="color: #c99424;"><b>Final: </b>{{segmentation.end}}</p>
+            <p class="card-text" style="color: #c99424;"><b>Peso: </b>{{segmentation.weight}}</p>
+            <p class="card-text" style="color: #c99424;"><b>Porcentaje %: </b>{{segmentation.percentage}}</p>
+            <p class="card-text" style="color: #c99424;"><b>Segmentos Codificados: </b>{{segmentation.condificados}}</p>
+            <p class="card-text" style="color: #c99424;"><b>Memos: </b>{{segmentation.memos}}</p>
+            <p class="card-text" style="color: #c99424;"><b>Creado por: </b>{{segmentation.created_by}}</p>
+           
+          </div>
+        </div>
+      </div>
+      </div>
+  
+    </div>
+  </div>
+</section>
+{% endblock %}
+
