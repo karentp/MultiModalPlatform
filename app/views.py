@@ -17,6 +17,7 @@ from .resources import SegmentationResource
 from tablib import Dataset
 from openpyxl import load_workbook
 from openpyxl_image_loader import SheetImageLoader
+from uuid import uuid4
 
 # Create your views here.
 
@@ -127,6 +128,8 @@ def singup(request):
                 return render(request,"login.html",{"title":"Singup","cssfile":"Singup"})
             elif request.method=='POST':
                 data =request.POST
+                name = data['name']
+                username = data['username']
                 email = data['email1']
                 password = data['password1']
                 # data.password2=password
@@ -135,13 +138,16 @@ def singup(request):
                     messages.error(request,"La dirección de correo electrónico ya existe") 
                     return redirect('login')
                 else:
-                    user = User.objects.create(username=email,email=email,password=make_password(password))
+                    user = User.objects.create(first_name= name,username=username,email=email,password=make_password(password))
+                    
                     print(user)
                     messages.success(request, "Usuario registrado exitosamente")                
+                    user.profile.institute = data['institute']
+                    user.save()
                     return redirect('login')
     except Exception as e:
             print(e)
-            messages.error(request, "Something went to wrong")                
+            messages.error(request, "Algo salió mal. Intente nuevamente.")                
             return redirect('login')
 
 
@@ -171,8 +177,8 @@ def export_excel(request):
     # Start from the first cell. Rows and columns are zero indexed.
     row = 1
     col = 0
-    cell_width = 50
-    cell_height = 60
+    cell_width = 45
+    cell_height = 40
     worksheet.set_column('A:A', cell_width )
     worksheet.set_column('B:W', 25)
     worksheet.set_default_row(cell_height )
@@ -194,7 +200,7 @@ def export_excel(request):
             y_scale = ((cell_height)/height)
 
         print("scale", x_scale, ' ', y_scale)
-        worksheet.insert_image(row, col, img, {'x_scale': x_scale, 'y_scale': y_scale, 'align':'center', 'x_offset': 105, 'y_offset': 5})
+        worksheet.insert_image(row, col, img, {'x_scale': x_scale, 'y_scale': y_scale, 'align':'center', 'x_offset': 100, 'y_offset': 5})
         worksheet.write(row, col + 1, segment[col + 1],format2)
         worksheet.write(row, col + 2, segment[col + 2],format2)
         worksheet.write(row, col + 3, segment[col + 3],format2)
@@ -213,6 +219,9 @@ def export_excel(request):
 
 def simple_upload(request):
     if request.method == 'POST':
+
+        segmentation=Segmentation.objects.all()
+        print("EJEMPLO ", segmentation[1].image)
         
         dataset = Dataset()
         new_segmentations = request.FILES['myfile']
@@ -229,16 +238,31 @@ def simple_upload(request):
             cell = str((sheet.cell(row=rowNumber, column=1)).coordinate)
             value = Segmentation.objects.create(image=data[0],document_name=data[1],code=data[2],created_by=request.user)
             if image_loader.image_in(cell):
-                image = image_loader.get(cell)
+                im = image_loader.get(cell)
                 print(sheet.cell(row=rowNumber, column=1).value)
-                print(image)
-                if(image.mode != "RGB"):
-                    image = image.convert("RGB")
-                value.image.save(data[1]+'jpg',ContentFile(StringIO().getvalue()), save = False) 
+                print(im)
+                if(im.mode != "RGB"):
+                    im = im.convert("RGB")
+                #image.save(data[1]+'.jpg')
+                #value.image.save(data[1]+'.jpg',image, save = False) 
+                #im = Image.open(image)
+                #im.thumbnail((220, 130), Image.ANTIALIAS)
+                print("before thumb")
+                thumb_io = BytesIO()
+                print("THUMB ", thumb_io)
+                print("FORMAT", im.format)
+                filename = '{}.{}'.format(uuid4().hex,'jpg')
+                print("FILENAME",filename)
+                im.save('app/media/upload_images/'+filename)
+                print("after thumb")
+                value.image='upload_images/'+filename
+                #value.image.save(im.filename, ContentFile(thumb_io.getvalue()), save=False)
+                value.save()
                 print("DATOS",data[0]," ",data[1]," ",data[2]," ",data[3]," ")
                 print("IMG VALUE ", value.image)
             value.save()
             print("VALUE", value)
+            rowNumber +=1
     return render(request,'upload.html')
 
 
