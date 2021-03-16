@@ -3,13 +3,23 @@ from django_filters import DateFilter, CharFilter
 
 from .models import *
 
+class CorpusFilter(django_filters.FilterSet):
+	start_date_publication = DateFilter(field_name="start_date_publication", lookup_expr='gte')
+	final_date_publication= DateFilter(field_name="final_date_publication", lookup_expr='lte')
+	gender= CharFilter(field_name='gender', lookup_expr='icontains')
+
+
+	class Meta:
+		model = Corpus
+		fields = ['gender', 'start_date_publication', 'final_date_publication']
+
 class SegmentationFilter(django_filters.FilterSet):
-	start_date = DateFilter(field_name="created_at", lookup_expr='gte')
-	end_date = DateFilter(field_name="created_at", lookup_expr='lte')
-	document_name= CharFilter(field_name='document_name', lookup_expr='icontains')
+	start_date_publication = DateFilter(field_name="start_date_publication", lookup_expr='gte')
+	final_date_publication= DateFilter(field_name="final_date_publication", lookup_expr='lte')
+	gender= CharFilter(field_name='gender', lookup_expr='icontains')
 
 
 	class Meta:
 		model = Segmentation
-		fields = '__all__'
-		exclude = ['image', 'created_at', 'updated_at']
+		fields = ['gender', 'start_date_publication', 'final_date_publication']
+		

@@ -6,7 +6,7 @@ from django.http import Http404, HttpResponse
 from django.core.files.base import ContentFile
 from .models import *
 from django.contrib import messages
-from .filters import SegmentationFilter
+from .filters import SegmentationFilter, CorpusFilter
 from PIL import Image
 import datetime
 import xlwt
@@ -18,10 +18,13 @@ from tablib import Dataset
 from openpyxl import load_workbook
 from openpyxl_image_loader import SheetImageLoader
 from uuid import uuid4
+from .forms import CorpusForm
 
 # Create your views here.
 
 global segmentationfiltered
+
+global corpusfiltered
 
 def home(request):
     return render(request,"home.html",{"title":"Home","cssfile":"Home"})
@@ -217,14 +220,32 @@ def export_excel(request):
     
     return response
 
-def simple_upload(request):
-    if request.method == 'POST':
 
+def simple_upload(request):
+    corpus_form = CorpusForm()
+    if request.method == 'POST':
+        corpus_form = CorpusForm(request.POST, request.FILES)
+        if corpus_form.is_valid():
+            corpus_form.save()
+    context = {'corpus_form': corpus_form}
+    return render(request,'upload.html', context)
+            
+def corpus_upload(request,id):
+    corpus=Corpus.objects.get(id=id)
+    corpus_form = CorpusForm(instance = corpus)
+    if request.method == 'POST':
+        corpus_form = CorpusForm(request.POST, request.FILES, instance = corpus)
+        if corpus_form.is_valid():
+            corpus_form.save()
+        
+        context = {'corpus_form': corpus_form}
         segmentation=Segmentation.objects.all()
+
         print("EJEMPLO ", segmentation[1].image)
         
         dataset = Dataset()
-        new_segmentations = request.FILES['myfile']
+        #new_segmentations = request.FILES['myfile']
+        new_segmentations = corpus.corpus_document
         imported_data = dataset.load(new_segmentations.read(), format='xlsx')
         rowNumber = 2
         print('PATH', request.FILES['myfile'])
@@ -237,6 +258,8 @@ def simple_upload(request):
             
             cell = str((sheet.cell(row=rowNumber, column=1)).coordinate)
             value = Segmentation.objects.create(image=data[0],document_name=data[1],code=data[2],created_by=request.user)
+            value.corpus = corpus
+            value.save()
             if image_loader.image_in(cell):
                 im = image_loader.get(cell)
                 print(sheet.cell(row=rowNumber, column=1).value)
@@ -263,7 +286,57 @@ def simple_upload(request):
             value.save()
             print("VALUE", value)
             rowNumber +=1
-    return render(request,'upload.html')
 
-
+    return render(request,'corpus_upload.html', context)
     
+
+def corpus_listing(request):
+    try:
+        global corpusfiltered
+        corpus=Corpus.objects.all()
+        total_corpus = corpus.count()
+        print("antes filtro")
+        myFilter = CorpusFilter(request.GET, queryset=corpus)
+        print("desp filtro")
+        corpus = myFilter.qs
+        corpusfiltered = corpus
+        print("global")
+        total_corpus = myFilter.qs.count()
+
+        return render(request,"corpus.html",{"title":"Corpus","cssfile":"Segmentation",
+                     "corpus":corpus, 'total_corpus': total_corpus, 
+                     'myFilter': myFilter})
+        
+    except Exception as e:
+            print(e)
+            messages.error(request, "Hubo un error, intente de nuevo.",e)                
+            return redirect('home')
+
+def corpus_for_approval(request):
+    try:
+        global corpusfiltered
+        corpus=Corpus.objects.all()
+        total_corpus = corpus.count()
+        myFilter = CorpusFilter(request.GET, queryset=corpus)
+        corpus = myFilter.qs
+        corpusfiltered = corpus
+        total_corpus = myFilter.qs.count()
+
+        return render(request,"corpus_for_approval.html",{"title":"Corpus","cssfile":"Segmentation",
+                     "corpus":corpus, 'total_corpus': total_corpus, 
+                     'myFilter': myFilter})
+        
+    except Exception as e:
+        messages.error(request, "Hubo un error, intente de nuevo.",e)                
+        return redirect('home')
+
+def singleCorpusView(request, id):
+    try:
+        corpus=Corpus.objects.get(id=id)
+        corpus_form = CorpusForm(instance = corpus)
+        for fieldname in corpus_form.fields:
+            corpus_form.fields[fieldname].disable = True
+        context = {'corpus_form': corpus_form, 'corpus':corpus}
+        return render(request,"single_corpus_view.html",context)
+    except Exception as e:
+        return redirect('corpus_listing')

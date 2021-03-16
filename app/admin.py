@@ -4,6 +4,8 @@ from .models import *
 from import_export.admin import ImportExportModelAdmin
 # Register your models here.
 
+admin.site.register(Corpus)
+
 @admin.register(Segmentation)
 
 class SegmentationAdmin(ImportExportModelAdmin):

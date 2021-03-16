@@ -44,6 +44,20 @@ class TimeStampMixin(models.Model):
     class Meta:
         abstract = True
 
+choice = (('Libro','Libro'),('Revista','Revista'),('Meme','Meme'),('Publicidad', 'Publicidad'))
+   
+class Corpus(models.Model):
+    gender_choice = ('Libro','Revista','Meme','Publicidad')
+    corpus_name = models.CharField(max_length=100,null=True,blank=True)
+    recollection_country = models.CharField(max_length=4,null=True,blank=True)
+    corpus_description = models.CharField(max_length=500,null=True,blank=True)
+    start_date_publication = models.DateTimeField(null=True,blank=True)
+    final_date_publication = models.DateTimeField(null=True,blank=True)
+    gender = models.CharField(max_length=40, null=True,blank=True, choices = choice)
+    approved = models.BooleanField(null=True,blank=True, default=False)
+    corpus_document = models.FileField(null=True,blank=True)
+    created_by=models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+
 class Segmentation(TimeStampMixin):
     image=models.ImageField(upload_to=path_and_rename)
     document_name=models.CharField(max_length=200)
@@ -54,6 +68,7 @@ class Segmentation(TimeStampMixin):
     weight=models.DecimalField(max_digits=5,decimal_places=2,null=True,blank=True)
     area_size = models.DecimalField(max_digits=50,decimal_places=2,null=True,blank=True)
     selected = models.BooleanField(null=True,blank=True, default=False)
+    corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.document_name
@@ -71,3 +86,4 @@ class Segmentation(TimeStampMixin):
     def areaSize(self):
         print("Path",self.image.path)
         return os.path.getsize(self.image.path)
+
