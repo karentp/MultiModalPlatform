@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="u-align-center u-clearfix u-section-1" id="sec-d745">
+  <div style='width: 100%; height:400px; padding-top:120px;
+    margin:0; background-color: #3a54e4;'>
+    <div class="row">
+      <div class="col-lg-6 offset-lg-3 col-md-9 offset-md-3 col-sm-6 offset-sm-1 mt-5 ">
+        <h3 >Información del Corpus por aprobar</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class='container'>
+  <div style='background-color:white; align-items: center;'>
+    {% include 'messages.html' %}
+
+    <div >
+      <form action="{% url 'simple_upload' %}" enctype="multipart/form-data" method="POST"
+        class="u-clearfix u-form-spacing-20 u-form-vertical u-inner-form" style="height: 450px;padding-left: 0px; padding-right: 0px; padding-top: 50px; ">
+        {% csrf_token %}
+        {{corpus_form.as_p}}
+        <div class="u-form-email u-form-group">
+          <button class='btn btn-success btn-sm btn-block' type="submit"> Subir </button>
+        </div>
+        <div class="u-form-email u-form-group" style="padding-left: 50px; padding-right: 50px;">
+          <h4 class="subtitle" style="color: black;">Seleccione y suba el archivo en formato ".xlsx" o Excel para cargar las imágenes y la información de cada una.</p>
+        </div>
+        
+        <div class="u-form-email u-form-group input-group mb-5">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Archivo</span>
+          </div>
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" style='background-color: rgb(209, 221, 248)'id="inputGroupFile01">
+            <label class="custom-file-label" for="inputGroupFile01">Escoger archivo</label>
+          </div>
+        </div>
+        
+        <div class="u-form-email u-form-group">
+          <button class='btn btn-success btn-sm btn-block' type="submit"> Subir </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+</section>
+
+
+
+<style>
+  
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,500&family=Merriweather&display=swap');
+
+  h3, hr{
+    color:white;
+    font-family: 'Merriweather', serif;
+  }
+
+  .subtitle{
+    font-family: 'Lora', serif;
+    font-size:14;
+  }
+  
+</style>
+
+{% endblock %}

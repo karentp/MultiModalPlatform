@@ -332,11 +332,38 @@ def corpus_for_approval(request):
 
 def singleCorpusView(request, id):
     try:
+        print("EN SINGLE FORM")
         corpus=Corpus.objects.get(id=id)
         corpus_form = CorpusForm(instance = corpus)
         for fieldname in corpus_form.fields:
             corpus_form.fields[fieldname].disable = True
-        context = {'corpus_form': corpus_form, 'corpus':corpus}
+        print("despues del form")
+        segmentation=Segmentation.objects.all()
+        corpus_segmentations = []
+        for seg in segmentation:
+            print("en el for")
+            if seg.corpus.id == corpus.id:
+                print("id es el mismo")
+                corpus_segmentations.append(seg)
+        
+        context = {'corpus_form': corpus_form, 'corpus':corpus, 'segmentations': corpus_segmentations}
+        print("despues de context")
         return render(request,"single_corpus_view.html",context)
     except Exception as e:
         return redirect('corpus_listing')
+
+def singleCorpusViewApproval(request, id):
+    try:
+        print("EN SINGLE APPROVAL FORM")
+        corpus=Corpus.objects.get(id=id)
+        corpus_form = CorpusForm(instance = corpus)
+        for fieldname in corpus_form.fields:
+            corpus_form.fields[fieldname].disable = True
+        print("despues del approval form")
+        
+        context = {'corpus_form': corpus_form, 'corpus':corpus}
+        print("despues de context")
+        return render(request,"singleview_corpus_approve.html",context)
+    except Exception as e:
+        return redirect('corpus_listing')
+        
