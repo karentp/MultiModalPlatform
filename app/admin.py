@@ -9,7 +9,7 @@ admin.site.register(Corpus)
 @admin.register(Segmentation)
 
 class SegmentationAdmin(ImportExportModelAdmin):
-    list_display =('image','document_name','code','created_by')
+    list_display =('image','document_name','code','created_by', 'corpus')
 
 @admin.register(Profile)
 

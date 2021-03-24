@@ -17,10 +17,17 @@
     {% include 'messages.html' %}
 
     <div >
-      <form action="{% url 'simple_upload' %}" enctype="multipart/form-data" method="POST"
+      <form action="" enctype="multipart/form-data" method="POST"
         class="u-clearfix u-form-spacing-20 u-form-vertical u-inner-form" style="height: 450px;padding-left: 0px; padding-right: 0px; padding-top: 50px; ">
         {% csrf_token %}
         {{corpus_form.as_p}}
+        <div class="u-form-email u-form-group" style="padding-left: 50px; padding-right: 50px;">
+          <select class="form-select" aria-label="Default select example" name="aprobado">
+            <option value=False>No aprobado</option>
+            <option value=True>Aprobado</option>
+            
+          </select>
+        </div>
         <div class="u-form-email u-form-group">
           <button class='btn btn-success btn-sm btn-block' type="submit"> Subir </button>
         </div>

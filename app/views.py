@@ -227,67 +227,100 @@ def simple_upload(request):
         corpus_form = CorpusForm(request.POST, request.FILES)
         if corpus_form.is_valid():
             corpus_form.save()
+    
     context = {'corpus_form': corpus_form}
     return render(request,'upload.html', context)
             
-def corpus_upload(request,id):
+def corpus_approve(request,id):
+
     corpus=Corpus.objects.get(id=id)
     corpus_form = CorpusForm(instance = corpus)
+    context = {'corpus_form': corpus_form}
+
     if request.method == 'POST':
-        corpus_form = CorpusForm(request.POST, request.FILES, instance = corpus)
+        corpus_form = CorpusForm(request.POST, request.FILES, instance=corpus)
+        corpus.approved = request.POST.get("aprobado")
+        print("APROBACION", corpus.approved)
+        print("APROBACION", request.POST.get("aprobado"))
+        
         if corpus_form.is_valid():
             corpus_form.save()
-        
-        context = {'corpus_form': corpus_form}
-        segmentation=Segmentation.objects.all()
 
-        print("EJEMPLO ", segmentation[1].image)
-        
-        dataset = Dataset()
-        #new_segmentations = request.FILES['myfile']
+    print("corpus document", corpus.corpus_document, "adio")
+  
+    
+
+    segmentation=Segmentation.objects.all()
+
+
+    
+    dataset = Dataset()
+    #new_segmentations = request.FILES['myfile']
+    #new_segmentations = corpus.corpus_document
+    #imported_data = dataset.load(new_segmentations.read(), format='xlsx')
+    rowNumber = 2
+    
+    print("wolixas",corpus.corpus_document)
+    #print("Olixas",request.FILES)
+    if (corpus.corpus_document):
+        print("IIIIIF")
         new_segmentations = corpus.corpus_document
-        imported_data = dataset.load(new_segmentations.read(), format='xlsx')
-        rowNumber = 2
-        print('PATH', request.FILES['myfile'])
+        print("SEGMENTOS")
+        wb = load_workbook(corpus.corpus_document)
+        print("CARGO")
+    else:
+        print("ADIOO")
+        new_segmentations = request.FILES['myfile']
         wb = load_workbook(request.FILES['myfile'])
-        sheet = wb['Datos']
 
-        image_loader = SheetImageLoader(sheet)
-        rowNumber = 2
-        for data in imported_data:
-            
-            cell = str((sheet.cell(row=rowNumber, column=1)).coordinate)
-            value = Segmentation.objects.create(image=data[0],document_name=data[1],code=data[2],created_by=request.user)
-            value.corpus = corpus
+    
+    #f = open(new_segmentations)
+    print("new seg", new_segmentations)
+    print("new segpath", new_segmentations.path)
+    print("LOADER")
+    
+    imported_data = dataset.load(new_segmentations.open().read(), format='xlsx')
+    print("IMPORTA")
+    sheet = wb['Datos']
+    print("LOADER22")
+    image_loader = SheetImageLoader(sheet)
+    rowNumber = 2
+    
+    corpus=Corpus.objects.get(id=corpus.id)
+    for data in imported_data:
+        print("FOR")
+        cell = str((sheet.cell(row=rowNumber, column=1)).coordinate)
+        value = Segmentation.objects.create(image=data[0],document_name=data[1],code=data[2],created_by=request.user, corpus= corpus) 
+        value.save()
+        print("SEGMENTACION HAS ONE", value.corpus, value.corpus.id)
+        if image_loader.image_in(cell):
+            im = image_loader.get(cell)
+            print(sheet.cell(row=rowNumber, column=1).value)
+            print(im)
+            if(im.mode != "RGB"):
+                im = im.convert("RGB")
+            #image.save(data[1]+'.jpg')
+            #value.image.save(data[1]+'.jpg',image, save = False) 
+            #im = Image.open(image)
+            #im.thumbnail((220, 130), Image.ANTIALIAS)
+            print("before thumb")
+            thumb_io = BytesIO()
+            print("THUMB ", thumb_io)
+            print("FORMAT", im.format)
+            filename = '{}.{}'.format(uuid4().hex,'jpg')
+            print("FILENAME",filename)
+            im.save('app/media/upload_images/'+filename)
+            print("after thumb")
+            value.image='upload_images/'+filename
+            #value.image.save(im.filename, ContentFile(thumb_io.getvalue()), save=False)
             value.save()
-            if image_loader.image_in(cell):
-                im = image_loader.get(cell)
-                print(sheet.cell(row=rowNumber, column=1).value)
-                print(im)
-                if(im.mode != "RGB"):
-                    im = im.convert("RGB")
-                #image.save(data[1]+'.jpg')
-                #value.image.save(data[1]+'.jpg',image, save = False) 
-                #im = Image.open(image)
-                #im.thumbnail((220, 130), Image.ANTIALIAS)
-                print("before thumb")
-                thumb_io = BytesIO()
-                print("THUMB ", thumb_io)
-                print("FORMAT", im.format)
-                filename = '{}.{}'.format(uuid4().hex,'jpg')
-                print("FILENAME",filename)
-                im.save('app/media/upload_images/'+filename)
-                print("after thumb")
-                value.image='upload_images/'+filename
-                #value.image.save(im.filename, ContentFile(thumb_io.getvalue()), save=False)
-                value.save()
-                print("DATOS",data[0]," ",data[1]," ",data[2]," ",data[3]," ")
-                print("IMG VALUE ", value.image)
-            value.save()
-            print("VALUE", value)
-            rowNumber +=1
-
-    return render(request,'corpus_upload.html', context)
+            print("DATOS",data[0]," ",data[1]," ",data[2]," ",data[3]," ")
+            print("IMG VALUE ", value.image)
+        value.save()
+        print("VALUE", value)
+        rowNumber +=1
+    corpus.approved = True
+    return render(request,'upload.html', context)
     
 
 def corpus_listing(request):
@@ -319,9 +352,10 @@ def corpus_for_approval(request):
         total_corpus = corpus.count()
         myFilter = CorpusFilter(request.GET, queryset=corpus)
         corpus = myFilter.qs
+        print("wola crayola depues del filtro")
         corpusfiltered = corpus
         total_corpus = myFilter.qs.count()
-
+        print("wola crayolaaaaaa")
         return render(request,"corpus_for_approval.html",{"title":"Corpus","cssfile":"Segmentation",
                      "corpus":corpus, 'total_corpus': total_corpus, 
                      'myFilter': myFilter})
@@ -342,6 +376,11 @@ def singleCorpusView(request, id):
         corpus_segmentations = []
         for seg in segmentation:
             print("en el for")
+            print("corpus", corpus.id)
+            print("seg", seg)
+            print("seg", seg.corpus)
+            print("seg type", type(seg.corpus))
+            print("seg", seg.corpus.id)
             if seg.corpus.id == corpus.id:
                 print("id es el mismo")
                 corpus_segmentations.append(seg)
@@ -352,18 +391,5 @@ def singleCorpusView(request, id):
     except Exception as e:
         return redirect('corpus_listing')
 
-def singleCorpusViewApproval(request, id):
-    try:
-        print("EN SINGLE APPROVAL FORM")
-        corpus=Corpus.objects.get(id=id)
-        corpus_form = CorpusForm(instance = corpus)
-        for fieldname in corpus_form.fields:
-            corpus_form.fields[fieldname].disable = True
-        print("despues del approval form")
-        
-        context = {'corpus_form': corpus_form, 'corpus':corpus}
-        print("despues de context")
-        return render(request,"singleview_corpus_approve.html",context)
-    except Exception as e:
-        return redirect('corpus_listing')
+
         

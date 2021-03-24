@@ -88,7 +88,7 @@
               <td>{{i.corpus_name}}</td>
               <td>{{i.corpus_description}}</td>
               <td>{{i.corpus_gender}}</td>
-              <td><a class="btn btn-sm btn-info" href="{% url 'singleCorpusViewApproval' id=i.pk %}">Ver</a></td>
+              <td><a class="btn btn-sm btn-info" href="{% url 'corpus_approve' i.id %}">Ver</a></td>
               
               {% if request.user.is_authenticated %}
               <td><a class="btn btn-sm btn-warning" href="">Actualizar</a></td>

@@ -17,12 +17,11 @@
     {% include 'messages.html' %}
 
     <div >
-      <form action="{% url 'simple_upload' %}" enctype="multipart/form-data" method="POST"
+      <form action="" enctype="multipart/form-data" method="POST"
         class="u-clearfix u-form-spacing-20 u-form-vertical u-inner-form" style="height: 450px;padding-left: 0px; padding-right: 0px; padding-top: 50px; ">
         {% csrf_token %}
         {{corpus_form.as_p}}
-        <div class="u-form-email u-form-group">
-          <button class='btn btn-success btn-sm btn-block' type="submit"> Subir </button>
+          <button class='btn btn-success btn-sm btn-block' href="" type="submit"> Subir </button>
         </div>
         <div class="u-form-email u-form-group" style="padding-left: 50px; padding-right: 50px;">
           <h4 class="subtitle" style="color: black;">Seleccione y suba el archivo en formato ".xlsx" o Excel para cargar las imágenes y la información de cada una.</p>
@@ -39,7 +38,7 @@
         </div>
         
         <div class="u-form-email u-form-group">
-          <button class='btn btn-success btn-sm btn-block' type="submit"> Subir </button>
+          <button class='btn btn-success btn-sm btn-block' type="submit"> Subirsochi </button>
         </div>
       </form>
     </div>
