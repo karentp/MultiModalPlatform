@@ -51,18 +51,21 @@ class Corpus(models.Model):
     corpus_name = models.CharField(max_length=100,null=True,blank=True)
     recollection_country = models.CharField(max_length=4,null=True,blank=True)
     corpus_description = models.CharField(max_length=500,null=True,blank=True)
-    start_date_publication = models.DateTimeField(null=True,blank=True)
-    final_date_publication = models.DateTimeField(null=True,blank=True)
+    start_date_publication = models.DateField(null=True,blank=True)
+    final_date_publication = models.DateField(null=True,blank=True)
     gender = models.CharField(max_length=40, null=True,blank=True, choices = choice)
     approved = models.BooleanField(null=True,blank=True, default=False)
     corpus_document = models.FileField(null=True,blank=True)
+    corpus_pdf = models.FileField(null=True,blank=True)
     created_by=models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    uploaded_date= models.DateField(auto_now_add=True, null=True, blank = True)
+    updated_date= models.DateField(auto_now_add=True, null= True, blank=True)
 
 class Segmentation(TimeStampMixin):
     image=models.ImageField(upload_to=path_and_rename)
     document_name=models.CharField(max_length=200)
     code=models.CharField(max_length=500)
-    created_by=models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    created_by=models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True, default = request.user)
     start=models.CharField(max_length=100,null=True,blank=True)
     end=models.CharField(max_length=100,null=True,blank=True)
     weight=models.DecimalField(max_digits=5,decimal_places=2,null=True,blank=True)
@@ -70,6 +73,7 @@ class Segmentation(TimeStampMixin):
     selected = models.BooleanField(null=True,blank=True, default=False)
     corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE, null=True, blank=True)
 
+    
     def __str__(self):
         return self.document_name
     def get_absolute_image_url(self):

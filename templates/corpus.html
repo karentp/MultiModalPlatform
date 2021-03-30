@@ -34,9 +34,9 @@
 
     <div class="row">
       <div class="col">
-        <div class='card card-body' style="color:black;">
+        <div>
           <form id="Filtersearchmethod" method='get'>
-            {{myFilter.form}}
+            {{myFilter.form.as_p}}
             <button class="btn btn-primary" type="submit"> Buscar </button>
           </form>
         </div>
@@ -53,7 +53,7 @@
         <div class="col-md-4">
               </div>
         <div class="col-md-4">
-        <a class="btn btn-success btn-sm btn-block" onclick="filter" href="{% url 'export-excel' %}"> Corpus a Excel</a>
+        <a class="btn btn-success btn-sm btn-block" onclick="filter" href="{ % url 'export_excel' %}"> Corpus a Excel</a>
         <script>
           function filter(){
             document.getElementById("Filtersearch").submit()
@@ -71,12 +71,9 @@
             <thead class="thead-light">
               <tr>
                 <th>Nombre del Corpus</th>
-                <th>Descripción</th>
                 <th>Género</th>
+                <th>Subido</th>
                 <th>Ver</th>
-                {% if request.user.is_authenticated %}
-                <th>Actualizar</th>
-                {% endif %}
               </tr>
             </thead>
       
@@ -85,13 +82,11 @@
             <tr>
               
               <td>{{i.corpus_name}}</td>
-              <td>{{i.corpus_description}}</td>
               <td>{{i.corpus_gender}}</td>
+              <td>{{i.updated_date}}</td>
               <td><a class="btn btn-sm btn-info" href="{% url 'singleCorpusView' id=i.pk %}" >Ver</a></td>
               
-              {% if request.user.is_authenticated %}
-              <td><a class="btn btn-sm btn-warning" href="">Actualizar</a></td>
-              {% endif %}
+
               {% endif %}
             </tr>
             {% endfor %}

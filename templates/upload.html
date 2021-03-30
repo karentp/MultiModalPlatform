@@ -2,75 +2,73 @@
 {% load static %}
 
 {% block content %}
-<section class="u-align-center u-clearfix u-section-1" id="sec-d745">
+<section class="u-align-center" id="" style='margin-bottom:120px;'>
   <div style='width: 100%; height:400px; padding-top:120px;
     margin:0; background-color: #3a54e4;'>
     <div class="row">
       <div class="col-lg-6 offset-lg-3 col-md-9 offset-md-3 col-sm-6 offset-sm-1 mt-5 ">
-        <h3 >Importar Corpus de Segmentos e Imágenes</h3>
+        <h3>Importar Corpus de Segmentos e Imágenes</h3>
       </div>
     </div>
   </div>
 
-  <div class='container'>
-  <div style='background-color:white; align-items: center;'>
-    {% include 'messages.html' %}
+  <div class='container' style="margin-bottom: 120px;">
+      {% include 'messages.html' %}
 
-    <div >
-      <form action="" enctype="multipart/form-data" method="POST"
-        class="u-clearfix u-form-spacing-20 u-form-vertical u-inner-form" style="height: 450px;padding-left: 0px; padding-right: 0px; padding-top: 50px; ">
-        {% csrf_token %}
-        {{corpus_form.as_p}}
-        <div class="u-form-email u-form-group" style="padding-left: 50px; padding-right: 50px;">
-          <select class="form-select" aria-label="Default select example" name="aprobado">
-            <option value=False>No aprobado</option>
-            <option value=True>Aprobado</option>
-            
-          </select>
-        </div>
-        <div class="u-form-email u-form-group">
-          <button class='btn btn-success btn-sm btn-block' type="submit"> Subir </button>
-        </div>
-        <div class="u-form-email u-form-group" style="padding-left: 50px; padding-right: 50px;">
-          <h4 class="subtitle" style="color: black;">Seleccione y suba el archivo en formato ".xlsx" o Excel para cargar las imágenes y la información de cada una.</p>
-        </div>
+      <div class="form-group">
+        <form action="" enctype="multipart/form-data" method="POST"
+          class="u-form-spacing-20 u-form-vertical "
+          style="padding-left: 0px; padding-right: 0px; padding-top: 50px; padding-bottom: 50px ">
+          {% csrf_token %}
         
-        <div class="u-form-email u-form-group input-group mb-5">
-          <div class="input-group-prepend">
-            <span class="input-group-text">Archivo</span>
+
+          {{corpus_form.as_table}}
+          
+          {%if request.user.is_staff %}
+          <div class="" style="padding-left: 50px; padding-right: 50px;">
+              <select class="form-select" aria-label="Default select example" name="aprobado">
+                <option value=False>No aprobado</option>
+                <option value=True>Aprobado</option>
+              </select>
           </div>
-          <div class="custom-file">
-            <input type="file" class="custom-file-input" style='background-color: rgb(209, 221, 248)'id="inputGroupFile01">
-            <label class="custom-file-label" for="inputGroupFile01">Escoger archivo</label>
+          {% endif %}
+
+          <div class="d-grid gap-2" style="margin-bottom: 100px; padding-bottom: 30px">
+            <button class="btn btn-success" type="submit">Subir Corpus</button>
+         
           </div>
-        </div>
-        
-        <div class="u-form-email u-form-group">
-          <button class='btn btn-success btn-sm btn-block' type="submit"> Subir </button>
-        </div>
-      </form>
-    </div>
+          
+        </form>
+      </div>
+      
+     
+      <br>
+      
   </div>
-</div>
 
 </section>
 
-
+<script>
+  $(function () {
+    $("#datetimepicker1").datetimepicker({
+      format: 'DD/MM/YYYY HH:mm',
+    });
+  });
+</script>
 
 <style>
-  
   @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,500&family=Merriweather&display=swap');
 
-  h3, hr{
-    color:white;
+  h3,
+  hr {
+    color: white;
     font-family: 'Merriweather', serif;
   }
 
-  .subtitle{
+  .subtitle {
     font-family: 'Lora', serif;
-    font-size:14;
+    font-size: 14;
   }
-  
 </style>
 
 {% endblock %}

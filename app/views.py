@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,logout as logoutUser,login as loginUser
 from django.contrib.auth.hashers import make_password
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.core.files.base import ContentFile
 from .models import *
 from django.contrib import messages
@@ -18,13 +18,15 @@ from tablib import Dataset
 from openpyxl import load_workbook
 from openpyxl_image_loader import SheetImageLoader
 from uuid import uuid4
-from .forms import CorpusForm
+from .forms import CorpusForm, CorpusFormView
 
 # Create your views here.
 
 global segmentationfiltered
 
 global corpusfiltered
+
+global idCorp
 
 def home(request):
     return render(request,"home.html",{"title":"Home","cssfile":"Home"})
@@ -158,9 +160,20 @@ def logout(request):
     logoutUser(request)
     return redirect('home')
 
+def export_corpus(request, *args, **kwargs):
+    global idCorp
+    corpus = Corpus.objects.get(id = idCorp)
+    file_path = corpus.corpus_pdf.path
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/pdf")
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+            return response
+    
 
 def export_excel(request):
-    global segmentationfiltered
+    global idCorp
+
     output = BytesIO()
     
     workbook = xlsxwriter.Workbook(output, {'in_memory': True, 'remove_timezone': True})
@@ -173,8 +186,20 @@ def export_excel(request):
     worksheet.write('B1', 'Nombre', format)
     worksheet.write('C1', 'Categoría', format)
     worksheet.write('D1', 'Fecha de creación',format)
+    global idCorp
+    segmentation=Segmentation.objects.filter(corpus = Corpus.objects.get(id = idCorp))
+    print(segmentation)
+    print("TIPO", type(segmentation))
+    corpus_segmentations = []
+    for seg in segmentation:
+        if seg.corpus.id == idCorp:
+            corpus_segmentations.append(seg)
 
-    rows = segmentationfiltered.values_list(
+    #myFilter = SegmentationFilter(request.GET, queryset=segmentation)
+    #segmentation = myFilter.qs
+    #segmentationfiltered = segmentation 
+
+    rows = segmentation.values_list(
         'image','document_name','code','created_at')
 
     # Start from the first cell. Rows and columns are zero indexed.
@@ -227,6 +252,7 @@ def simple_upload(request):
         corpus_form = CorpusForm(request.POST, request.FILES)
         if corpus_form.is_valid():
             corpus_form.save()
+            return HttpResponseRedirect(('corpus'))
     
     context = {'corpus_form': corpus_form}
     return render(request,'upload.html', context)
@@ -245,11 +271,13 @@ def corpus_approve(request,id):
         
         if corpus_form.is_valid():
             corpus_form.save()
+            create_segmentations(request, corpus)
 
     print("corpus document", corpus.corpus_document, "adio")
-  
+    return render(request,'upload.html', context)
     
-
+def create_segmentations(request,corpus):
+    corpus = Corpus.objects.get(id=corpus.id)
     segmentation=Segmentation.objects.all()
 
 
@@ -270,8 +298,8 @@ def corpus_approve(request,id):
         print("CARGO")
     else:
         print("ADIOO")
-        new_segmentations = request.FILES['myfile']
-        wb = load_workbook(request.FILES['myfile'])
+        new_segmentations = request.FILES['corpus_document']
+        wb = load_workbook(request.FILES['corpus_document'])
 
     
     #f = open(new_segmentations)
@@ -320,13 +348,12 @@ def corpus_approve(request,id):
         print("VALUE", value)
         rowNumber +=1
     corpus.approved = True
-    return render(request,'upload.html', context)
     
 
 def corpus_listing(request):
     try:
         global corpusfiltered
-        corpus=Corpus.objects.all()
+        corpus=Corpus.objects.filter(approved= True)
         total_corpus = corpus.count()
         print("antes filtro")
         myFilter = CorpusFilter(request.GET, queryset=corpus)
@@ -348,16 +375,17 @@ def corpus_listing(request):
 def corpus_for_approval(request):
     try:
         global corpusfiltered
-        corpus=Corpus.objects.all()
-        total_corpus = corpus.count()
-        myFilter = CorpusFilter(request.GET, queryset=corpus)
-        corpus = myFilter.qs
+
+        corpus_pending = Corpus.objects.filter(approved= False)
+        total_corpus = corpus_pending.count()
+        myFilter = CorpusFilter(request.GET, queryset=corpus_pending)
+        corpus_pending = myFilter.qs
         print("wola crayola depues del filtro")
-        corpusfiltered = corpus
+        corpusfiltered = corpus_pending
         total_corpus = myFilter.qs.count()
         print("wola crayolaaaaaa")
         return render(request,"corpus_for_approval.html",{"title":"Corpus","cssfile":"Segmentation",
-                     "corpus":corpus, 'total_corpus': total_corpus, 
+                     "corpus":corpus_pending, 'total_corpus': total_corpus, 
                      'myFilter': myFilter})
         
     except Exception as e:
@@ -368,11 +396,13 @@ def singleCorpusView(request, id):
     try:
         print("EN SINGLE FORM")
         corpus=Corpus.objects.get(id=id)
-        corpus_form = CorpusForm(instance = corpus)
+        corpus_form = CorpusFormView(instance = corpus)
         for fieldname in corpus_form.fields:
             corpus_form.fields[fieldname].disable = True
         print("despues del form")
         segmentation=Segmentation.objects.all()
+        global idCorp
+        idCorp = corpus.id
         corpus_segmentations = []
         for seg in segmentation:
             print("en el for")
@@ -385,7 +415,7 @@ def singleCorpusView(request, id):
                 print("id es el mismo")
                 corpus_segmentations.append(seg)
         
-        context = {'corpus_form': corpus_form, 'corpus':corpus, 'segmentations': corpus_segmentations}
+        context = {'corpus_form': corpus_form, 'corpus':corpus, 'segmentations': corpus_segmentations, 'corpus_pdf': corpus.corpus_pdf}
         print("despues de context")
         return render(request,"single_corpus_view.html",context)
     except Exception as e:

@@ -20,13 +20,13 @@
     
     {% include 'messages.html' %}
 
-    <hr>
+    <br>
 
     <div class="container">
       <div class="row ">
         <div class="row ">
           <div class="col-sm-4">
-            <h5 class="subtitle" style="color:black">Corpus Totales: {{total_corpus}}</h5>
+            <h5 class="subtitle" style="color:black">Corpus pendientes de aprobación: {{total_corpus}}</h5>
           </div>
         </div>
 
@@ -35,35 +35,17 @@
 
     <div class="row">
       <div class="col">
-        <div class='card card-body' style="color:black;">
+        <div>
           <form id="Filtersearchmethod" method='get'>
-            {{myFilter.form}}
+            {{myFilter.form.as_p}}
             <button class="btn btn-primary" type="submit"> Buscar </button>
           </form>
         </div>
       </div>
     </div>
-
-    <div class="row">
-      
-        <hr>
-        <div class="col-md-4">
-        {% if request.user.is_authenticated %}
-        <a class="btn btn-primary  btn-sm btn-block" href="{% url 'simple_upload' %}">Subir Corpus</a>
-        </div>
-        <div class="col-md-4">
-              </div>
-        <div class="col-md-4">
-        <a class="btn btn-success btn-sm btn-block" onclick="filter" href="{% url 'export-excel' %}"> Corpus a Excel</a>
-        <script>
-          function filter(){
-            document.getElementById("Filtersearch").submit()
-          }
-        </script>
-        </div>
-        {% endif %}
-        <br>
-    </div>
+    <br>
+    <br>
+  
     
     <div class="row" style="margin-top:2%;">
       <div class="col-xl">
@@ -72,12 +54,10 @@
             <thead class="thead-light">
               <tr>
                 <th>Nombre del Corpus</th>
-                <th>Descripción</th>
                 <th>Género</th>
+                <th>Creado por </th>
+                <th>Subido</th>
                 <th>Ver</th>
-                {% if request.user.is_authenticated %}
-                <th>Actualizar</th>
-                {% endif %}
               </tr>
             </thead>
       
@@ -86,13 +66,12 @@
             <tr>
               
               <td>{{i.corpus_name}}</td>
-              <td>{{i.corpus_description}}</td>
               <td>{{i.corpus_gender}}</td>
+              <td>{{i.created_by.username}}</td>
+              <td>{{i.uploaded_date}}</td>
               <td><a class="btn btn-sm btn-info" href="{% url 'corpus_approve' i.id %}">Ver</a></td>
               
-              {% if request.user.is_authenticated %}
-              <td><a class="btn btn-sm btn-warning" href="">Actualizar</a></td>
-              {% endif %}
+          
               {% endif %}
             </tr>
             {% endfor %}
@@ -113,7 +92,7 @@
   
   @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,500&family=Merriweather&display=swap');
 
-  h3, hr{
+  h3{
     color:white;
     font-family: 'Merriweather', serif;
   }
@@ -121,6 +100,9 @@
   .subtitle{
     font-family: 'Lora', serif;
     font-size:14;
+  }
+  hr{
+    color:rgb(5, 16, 116);
   }
   
 </style>

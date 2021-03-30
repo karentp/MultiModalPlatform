@@ -17,6 +17,8 @@ django-import-export = "*"
 django-filter = "*"
 xlsxwriter = "*"
 openpyxl-image-loader = "*"
+django-bootstrap-datepicker-plus = "*"
+django-bootstrap4 = "*"
 
 [dev-packages]
 
